@@ -1,0 +1,35 @@
+get:
+  tags:
+    - BackEnd
+  description: Test family controller
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:      # Request body contents
+            type: object
+            properties:
+              response_msg:
+                type: string
+post:
+  tags:
+    - BackEnd
+  parameters:
+    - name: friendly_name
+      in: query
+      required: true
+      description: The name of the environment
+      schema:
+        type: string
+  description: Test environment controller
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:      # Request body contents
+            type: object
+            properties:
+              response_msg:
+                type: string

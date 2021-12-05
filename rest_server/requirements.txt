@@ -1,0 +1,12 @@
+connexion == 2.8.0
+flask-cors
+python_dateutil == 2.6.0
+setuptools >= 21.0.0
+swagger_ui_bundle
+Pillow
+docker
+numpy
+rospkg
+pyyaml
+empy
+ruamel.yaml

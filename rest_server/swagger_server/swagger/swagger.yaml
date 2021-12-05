@@ -1,0 +1,28 @@
+openapi: 3.0.2
+info:
+  version: 1.0.0
+  title: Swagger Skeleton BackEnd
+  termsOfService: http://swagger.io/terms/
+  contact:
+    email: lpk1950@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+servers:
+  - url: /v1
+    description: Test Server
+paths:
+  /backend:
+    $ref: './paths/backend.yaml'
+  /families:
+    $ref: './paths/families/families.yaml'
+#   # /families/{environment_id}/members:
+#   #   $ref: './paths/families/family_id/members.yaml'
+#   # /families/{family_id}/members/{member_id}:
+#   #   $ref: './paths/families/family_id/member_id.yaml'
+  # /families/my_family:
+  #   $ref: './paths/families/my_family/my_family.yaml'
+
+components:
+  schemas: # Intentionally left blank. This will be autocreated from pydantic types at runtime
+    

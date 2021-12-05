@@ -1,0 +1,32 @@
+get:
+  tags:
+    - BackEnd
+  description: Get the list of the families from the controller
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:      # Request body contents
+            $ref: '#/components/schemas/Family'
+            type: object
+            properties:
+              response_msg:
+                type: string
+# delete:
+#   tags:
+#     - BackEnd
+#   description: Just a show case how to access ErrorCodes
+#   responses:
+#     "200":
+#       description: OK
+#       content:
+#         application/json:
+#           schema:
+#             #$ref: '#/components/schemas/Point2D'
+#             type: object
+#             properties:
+#               response_msg:
+#                 type: string
+
+          
