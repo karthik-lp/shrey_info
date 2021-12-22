@@ -1,0 +1,15 @@
+version: "3"
+services:
+
+  # Run rest-backend as docker container  
+
+  rest-backend:
+    image: rest_server:personal_project
+    command: python3 -m swagger_server -f ${BASE_DATA_BASE_PATH}  -p 8080
+    volumes:
+      - data_base:${BASE_DATA_BASE_PATH}
+      - /var/run/docker.sock:/var/run/docker.sock
+    network_mode: host
+
+volumes:
+    data_base:

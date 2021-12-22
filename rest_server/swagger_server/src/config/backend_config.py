@@ -5,17 +5,14 @@ import os
 
 class BackendConfig(object):
     default_path = os.path.join(
-        os.environ.get(
-            "XDG_CONFIG_HOME",
-            os.path.join(os.environ["HOME"], "workspace/personal_proj"),
-        ),
+        os.environ.get("XDG_CONFIG_HOME", os.path.join(os.environ["HOME"], ".config/personal_project", )),
         "data_base",
     )
 
     parser = argparse.ArgumentParser(description="Configure Backend settings")
 
     parser.add_argument(
-        "-e",
+        "-f",
         "--data_folder",
         dest="base_data_base_path",
         help="Open specified data_base base path",

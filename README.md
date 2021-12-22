@@ -14,3 +14,13 @@ Before export: `export PYTHONPATH="$PYTHONPATH:$(pwd)"` from the **rest_server**
 Start with `python3 -m swagger_server -d <is_debug_on>`
 
 Per default you can access the web gui over http://localhost:8080/v1/
+
+# Usage as Docker container
+
+To run the rest_server as a docker container, build the image locally with the following command from the root directory
+
+`docker build -t rest_server:personla_project . `
+
+Once the image is built, run the container from the compose file.
+
+`docker-compose up `
