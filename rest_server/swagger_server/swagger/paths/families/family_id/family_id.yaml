@@ -1,0 +1,19 @@
+get:
+  tags:
+    - Familyt_ID
+  description: Get the information for one family
+  parameters:
+    - name: family_id
+      in: path
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+  responses:
+    "200":
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Family"

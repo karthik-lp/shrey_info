@@ -2,7 +2,7 @@ from uuid import uuid4
 import logging
 
 
-log = logging.getLogger("swagger_server.zone_controller")
+log = logging.getLogger("swagger_server.members_controller")
 
 
 class MembersController:

@@ -16,13 +16,7 @@ paths:
     $ref: './paths/backend.yaml'
   /families:
     $ref: './paths/families/families.yaml'
-#   # /families/{environment_id}/members:
-#   #   $ref: './paths/families/family_id/members.yaml'
-#   # /families/{family_id}/members/{member_id}:
-#   #   $ref: './paths/families/family_id/member_id.yaml'
-  # /families/my_family:
-  #   $ref: './paths/families/my_family/my_family.yaml'
-
+  /families/{family_id}:
+    $ref: './paths/families/family_id/family_id.yaml'
 components:
   schemas: # Intentionally left blank. This will be autocreated from pydantic types at runtime
-    

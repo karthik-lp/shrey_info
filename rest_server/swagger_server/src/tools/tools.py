@@ -1,20 +1,14 @@
 import os
 import yaml
 from datetime import datetime
-import numpy as np
-from PIL import Image
 from werkzeug.exceptions import (
     NotFound,
-    Conflict,
-    HTTPException,
-    PreconditionFailed,
-)
+    Conflict)
 from swagger_server.src.tools.uuid import check_uuid
 from swagger_server.src.config import BackendConfig
-from distutils import dir_util
-import time
+from swagger_server.models.family import Family
+# from swagger_server.schema_generator import Family
 import logging
-import ruamel.yaml
 
 log = logging.getLogger("swagger_server.__init__")
 
@@ -27,7 +21,10 @@ def get_base_data_base_path():
 
 
 def get_families_base_path():
-    return os.path.join(get_base_data_base_path(), "families")
+    families_folder_path = os.path.join(get_base_data_base_path(), "families")
+    if not os.path.exists(families_folder_path):
+        os.mkdir(families_folder_path)
+    return families_folder_path
 
 
 def werkzeug_to_pair(we):
@@ -65,6 +62,17 @@ def check_my_family(target_fam):
         )
 
 
+def is_my_family(family_id):
+    try:
+        current_my_family = get_my_family_id()
+        if family_id == current_my_family:
+            return True
+        else:
+            return False
+    except FileNotFoundError:
+        return False
+
+
 def dir_to_fam(directory):
     with open(os.path.join(directory, "metadata.yaml")) as f:
         d = yaml.safe_load(f)
@@ -86,66 +94,6 @@ def get_fam(family_id):
     return dir_to_fam(get_fam_path(family_id))
 
 
-# def update_zone_type(zone):
-#     type_lookup = {
-#         "RESTRICTED": NavigationZone.TYPE_RESTRICTED,
-#         "AVOIDANCE": NavigationZone.TYPE_WEIGHTED,
-#         "ONE_WAY": NavigationZone.TYPE_WEIGHTED,
-#         "PREFERED_DIRECTION": NavigationZone.TYPE_WEIGHTED,
-#         "ROBOT": NavigationZone.TYPE_WEIGHTED,
-#         "MAX_VELOCITY": NavigationZone.TYPE_MAX_VELOCITY,
-#         "NO_PASSING": NavigationZone.TYPE_TRIGGER,
-#         "MAX_CAPACITY": NavigationZone.TYPE_INTERACTION,
-#         "ERASER": NavigationZone.TYPE_FREE,
-#     }
-#     if isinstance(zone, Zone):
-#         try:
-#             zone.type = type_lookup[zone.ui_properties.visualization_type]
-#         except Exception:
-#             pass
-#     elif (
-#         isinstance(zone, dict)
-#         and "ui_properties" in zone
-#         and "visualization_type" in zone["ui_properties"]
-#     ):
-#         zone["type"] = type_lookup[zone["ui_properties"]["visualization_type"]]
-
-#     return zone
-
-
-def merge_dict(a, b, path=None, overwrite=True):
-    "merges b into a"
-    if path is None:
-        path = []
-    for key in b:
-        if key in a:
-            if isinstance(a[key], dict) and isinstance(b[key], dict):
-                merge_dict(a[key], b[key], path + [str(key)], overwrite)
-            elif a[key] == b[key]:
-                pass  # same leaf value
-            else:
-                if overwrite:
-                    a[key] = b[key]
-                else:
-                    err_msg = "Overwrite flag is not set. Can not overwrite/modify the changes"
-                    log.error(err_msg)
-                    raise Conflict(err_msg)
-        else:
-            a[key] = b[key]
-    return a
-
-
-# def get_zones_list(environment_id):
-#     env_path = get_env_path(environment_id)
-#     poly_map_path = os.path.join(env_path, "polygon_maps")
-
-#     zone_path = os.path.join(poly_map_path, "navigation_zones.yaml")
-#     if not os.path.exists(zone_path):
-#         return []
-#     with open(zone_path) as f:
-#         return yaml.load(f, Loader=yaml.SafeLoader)
-
-
-def is_valid_env(environment_id):
-    check_uuid(environment_id)
-    return os.path.exists(os.path.join(get_env_base_path(), environment_id))
+def is_valid_fam(family_id):
+    check_uuid(family_id)
+    return os.path.exists(os.path.join(get_families_base_path(), family_id))

@@ -28,5 +28,4 @@ get:
 #             properties:
 #               response_msg:
 #                 type: string
-
-          
+         

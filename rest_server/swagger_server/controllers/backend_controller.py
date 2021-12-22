@@ -2,9 +2,10 @@ from swagger_server.src.config import BackendConfig
 from swagger_server.controllers.family_controller import FamilyController
 from swagger_server.src.tools.tools import (
     get_families_base_path,
-    get_my_family_id,
+    # get_my_family_id,
     get_fam,
     get_fam_path,
+    serialize_metadata,
 )
 from swagger_server.src.tools.uuid import check_uuid, is_valid_uuid
 from werkzeug.exceptions import (
@@ -42,35 +43,49 @@ class BackEndController:
         if BackEndController.__instance is not None:
             raise Exception("This is a singleton class")
         else:
-            # load active env on startup
-            # initial_activate_env()
 
             self.__family_controller_list = []
             self.__max_length = 3
             self.__my_family_id = self.get_my_family_id()
-            self.__family_controller_list.append(
-                FamilyController(id=self.__my_family_id)
-            )
             BackEndController.__instance = self
+            if self.__my_family_id is not None:
+                self.__family_controller_list.append(
+                    FamilyController(id=self.__my_family_id)
+                )
 
-    def add_family(self, family_name):
-        """add_environment
+    def add_family(self, friendly_name=""):
+        """add_family
 
-        Just a testfunction to test the families list.
+        Adds a new family
 
+        :param friendly_name:
+        :type friendly_name: str
 
-        :rtype: Str
+        :rtype: Family
         """
-        new_fam = FamilyController(family_name)
-        if len(self.__family_controller_list) >= self.__max_length:
-            self.__family_controller_list.pop()
-        self.__family_controller_list.insert(1, new_fam)
-        return f"This is the new added family {new_fam.getName()}"
+        # fam = self.__family_controller_list[0].create_family(
+        #     friendly_name)
+        # self.__family_controller_list.append(
+        #     FamilyController(id=self.__my_family_id)
+        # )
+        fam = FamilyController(name=friendly_name).get_self_family()
+        serialize_metadata(fam, get_families_base_path())
+        try:
+            self.update_my_family_marker(fam.id)
+            self.update_list(fam.id, 0)
+            self.__my_family_id = fam.id
+            print(self.__my_family_id)
+        except Exception as e:
+            self.__my_family_id = None
+            FamilyController.delete_family_for_family_id(fam.id)
+            log.error(str(e))
+            raise e
+        return f"This is the new added family {fam.friendly_name}: {fam.id}"
 
     def get_families_lists(self):
-        """get_environments_lists
+        """get_families_lists
 
-        Returns the environment ID of the environment from the environment_controller.
+        Returns the family ID of the family from the family_controller.
 
 
         :rtype: Str
@@ -83,9 +98,9 @@ class BackEndController:
         return fam_list_string
 
     def get_family_index_from_list(self, family_id):
-        """get_environment_index_from_list
+        """get_family_index_from_list
 
-        Search for a controller in the environment_controller list for a specific ID.
+        Search for a controller in the family_controller list for a specific ID.
         If nothings match, it returns None
 
 
@@ -96,10 +111,34 @@ class BackEndController:
                 return index
         return None
 
-    def get_families(self):
-        """get_environments
+    def update_list(self, family_id, update_index=1):
+        """update_list
 
-        List all available environment ids
+        Update the position in the list of an FamilyController for the given family_id.
+        If the current position is lower equal the update_index, it will not change the position and returns the controller back.
+        If there is no controller for the given family_id, then it instantiates a FamilyController.
+
+
+        :rtype: FamilyController
+        """
+        check_uuid(family_id)
+        index = self.get_family_index_from_list(family_id)
+        if index is not None:
+            if index > update_index:
+                family_controller = self.__family_controller_list.pop(index)
+            else:
+                return self.__family_controller_list[index]
+        else:
+            if len(self.__family_controller_list) >= self.__max_length:
+                self.__family_controller_list.pop()
+            family_controller = FamilyController(id=family_id)
+        self.__family_controller_list.insert(update_index, family_controller)
+        return family_controller
+
+    def get_families(self):
+        """get_familys
+
+        List all available family ids
 
 
         :rtype: List[UUID]
@@ -119,59 +158,63 @@ class BackEndController:
         return families
 
     def get_families_family_id(self, family_id):
-        """get_environments_environment_id
+        """get_families_family_id
 
-        Get the information for one environment
+        Get the information for one family
 
-        :param environment_id:
-        :type environment_id: str
+        :param family_id:
+        :type family_id: str
 
-        :rtype: Environment
+        :rtype: Family
         """
         check_uuid(family_id)
 
         return get_fam(family_id)
 
     def get_family_controller(self, family_id):
-        """get_environment_controller
+        """get_family_controller
 
-        Method for testing: Returns the environment_controller for a given ID
+        Method for testing: Returns the family_controller for a given ID
 
 
-        :rtype: EnvironmentController
+        :rtype: FamilyController
         """
         for fam in self.__family_controller_list:
             if str(fam.getID()) == family_id:
-                print(f"EnvController id: {fam.getID()}")
+                print(f"Family id: {fam.getID()}")
                 return fam
         return None
 
+    def get_family(self, family_id):
+        """get_family
+
+        Get the information for one family
+
+        :param family_id:
+        :type family_id: str
+
+        :rtype: Family
+        """
+        check_uuid(family_id)
+        return self.update_list(family_id).get_self_family()
+
     def get_my_family_id(self):
         my_family_marker = os.path.join(get_families_base_path(), "my_family")
-        with open(my_family_marker) as f:
-            lines = f.readlines()
-        return lines[0].split()[0]
-
-    # def get_env_base_path(self):
-    #     """get_environments
-
-    #     List all available environment ids
-
-
-    #     :rtype: List[Environment]
-    #     """
-    #     p = BackendConfig.base_env_path
-    #     if not os.path.exists(p):
-    #         os.mkdir(p)
-    #     return p
+        try:
+            with open(my_family_marker) as f:
+                lines = f.readlines()
+            my_family_id = lines[0].split()[0]
+            return my_family_id if is_valid_uuid(my_family_id) else None
+        except IOError:
+            return
 
     def set_my_family(self, family_id):
-        """set_active_env
+        """set_my_family
 
-        Set the active environment.
+        Set as my family.
 
 
-        :rtype: Environment
+        :rtype: Family
         """
         self.update_my_family_marker(family_id)
         index = self.get_family_index_from_list(family_id)
@@ -188,9 +231,9 @@ class BackEndController:
         return self.my_family_get()
 
     def update_my_family_marker(self, family_id):
-        """update_active_env_marker
+        """update_my_family_marker
 
-        Update the active_env file with the new ID.
+        Update the my_family file with the new ID.
 
 
         :rtype: None
@@ -198,7 +241,7 @@ class BackEndController:
         self.my_family_delete()
         fam_path = get_fam_path(family_id)
         if not (os.path.exists(fam_path)):
-            err_msg = f"Environment not found. {fam_path} folder does not exist"
+            err_msg = f"Family not found. {fam_path} folder does not exist"
             log.error(err_msg)
             raise NotFound(err_msg)
         my_family_marker = os.path.join(get_families_base_path(), "my_family")
@@ -206,25 +249,23 @@ class BackEndController:
             f.writelines(family_id)
 
     def my_family_get(self):
-        """active_env_get
+        """my_family_get
 
-        Returns the active Environment.
+        Returns my Family.
 
 
-        :rtype: Environment
+        :rtype: Family
         """
-        try:
-            name = get_my_family_id()
-        except FileNotFoundError:
-            err_msg = "No active environment set"
+        if self.__my_family_id is None:
+            err_msg = "No family is added to as your family"
             log.error(err_msg)
             raise NotFound(err_msg)
-        return get_fam(name)
+        return get_fam(self.__my_family_id)        
 
     def my_family_delete(self):
-        """active_env_delete
+        """my_family_delete
 
-        Removes active_env marker/file.
+        Removes my_family marker/file.
 
 
         :rtype: Str, HTML_code

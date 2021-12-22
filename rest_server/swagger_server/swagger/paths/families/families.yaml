@@ -1,6 +1,6 @@
 get:
   tags:
-    - BackEnd
+    - Family
   description: Test family controller
   responses:
     "200":
@@ -14,15 +14,15 @@ get:
                 type: string
 post:
   tags:
-    - BackEnd
+    - Family
   parameters:
     - name: friendly_name
       in: query
       required: true
-      description: The name of the environment
+      description: The name of the family
       schema:
         type: string
-  description: Test environment controller
+  description: Test family controller
   responses:
     "200":
       description: OK

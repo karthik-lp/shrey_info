@@ -1,6 +1,6 @@
 from swagger_server.controllers.backend_controller import BackEndController
 
-"""Create Zone service"""
+"""Create Members service"""
 
 method_decorators = []
 

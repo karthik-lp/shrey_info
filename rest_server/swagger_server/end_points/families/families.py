@@ -1,23 +1,28 @@
 from swagger_server.controllers.backend_controller import BackEndController
+from swagger_server.controllers.family_controller import FamilyController
 
-"""Create Environment service"""
+"""Create Families service"""
 
 method_decorators = []
-families = {}
 
 
 def get():
-    return BackEndController.get_instance().get_families()
+    return FamilyController.get_families()
 
 
-def post(family_name=""):
-    return BackEndController.get_instance().add_family(family_name=family_name)
+def post(friendly_name=""):
+    return BackEndController.get_instance().add_family(friendly_name=friendly_name)
 
 
 def search():
     # NOTE: we need to wrap it with list for Python 3 as dict_values is not JSON serializable
-    return BackEndController.get_instance().get_families()
+    return FamilyController.get_families()
+
+
+def delete():
+    return BackEndController.get_instance().delete_families()
 
 
 def get(family_id):
-    return f"environment view get id: {family_id}"
+    return BackEndController.get_instance().get_family(family_id)
+

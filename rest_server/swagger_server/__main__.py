@@ -11,8 +11,7 @@ from flask_cors import CORS
 from typing import Any, Dict
 from pathlib import Path
 
-from swagger_server.schema_generator import get_schemas
-from swagger_server.schema_generator import Family
+from swagger_server.schema_generator import get_schemas, Family
 
 from connexion.resolver import RestyResolver
 from connexion.apis import flask_utils
@@ -27,9 +26,12 @@ from swagger_server.src.tools.converters import (
 from swagger_server.src.tools.logging import (
     get_file_handler,
     get_stream_handler,
-)
+    )
+from swagger_server.controllers.backend_controller import BackEndController
 
-schema_list = [Family]
+schema_list = [
+    Family,
+]
 
 
 def access_recursive(dictionary, keys):
@@ -86,6 +88,8 @@ def get_bundled_specs(main_file: Path) -> Dict[str, Any]:
 
 def main():
 
+    BackEndController.get_instance()
+
     # Setup Connexion App
     flask_utils.PATH_PARAMETER_CONVERTERS["integer"] = "integer"
     flask_utils.PATH_PARAMETER_CONVERTERS["number"] = "number"
@@ -115,7 +119,7 @@ def main():
     app.app.config["validator"] = Validator(api_spec)
     app.add_api(
         api_spec,
-        resolver=RestyResolver("end_points"),
+        resolver=RestyResolver("swagger_server.end_points"),
         pythonic_params=True,
         base_path=BackendConfig.server_name,
     )
@@ -130,6 +134,7 @@ def main():
     )
 
     app.run(port=BackendConfig.port, debug=BackendConfig.debug_mode_on)
+
 
 
 if __name__ == "__main__":

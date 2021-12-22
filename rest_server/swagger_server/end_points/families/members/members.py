@@ -1,6 +1,6 @@
 from swagger_server.controllers.backend_controller import BackEndController
 
-"""Create Zone service"""
+"""Create Members service"""
 
 method_decorators = []
 members = {}
@@ -14,12 +14,12 @@ def get(family_id):
 
 def patch(family_id, member_id):
     fam_controller = BackEndController.get_instance().get_family(family_id)
-    member_controller = fam_controller.getZoneController()
-    member_controller.addZone(member_id)
+    member_controller = fam_controller.getMembersController()
+    member_controller.addMember(member_id)
     return f"Added member: {member_id}"
 
 
 def search(family_id):
     fam_controller = BackEndController.get_instance().get_family(family_id)
     member_controller = fam_controller.getMemberController()
-    return f"Zone controller ID: {member_controller.getID()} Zone List:{member_controller.getMembers()}"
+    return f"Members controller ID: {member_controller.getID()} Members List:{member_controller.getMembers()}"

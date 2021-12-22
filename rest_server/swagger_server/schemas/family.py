@@ -1,8 +1,6 @@
 import uuid
-# from typing import List, Tuple, Optional, NewType, cast, Dict, Union, Callable
 from pydantic import BaseModel
 import datetime
-# import yaml
 
 
 class Family(BaseModel):
